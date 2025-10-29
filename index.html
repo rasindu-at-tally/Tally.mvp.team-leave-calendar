@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Leave Calendar</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Team Leave Calendar</h1>
+            <p class="subtitle">Manage your team's planned and tentative annual leaves</p>
+        </header>
+
+        <section class="form-section">
+            <h2>Add New Leave</h2>
+            <form id="leaveForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Team Member Name *</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="leaveType">Leave Type *</label>
+                        <select id="leaveType" required>
+                            <option value="planned">Planned</option>
+                            <option value="tentative">Tentative</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startDate">Start Date *</label>
+                        <input type="date" id="startDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End Date *</label>
+                        <input type="date" id="endDate" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reason">Reason / Notes</label>
+                    <textarea id="reason" rows="2" placeholder="Optional: Add reason or notes for this leave"></textarea>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="christmasAvailable">
+                        <span>Available during Christmas Shutdown (22 Dec 2025 - 09 Jan 2026)?</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Add Leave</button>
+                    <button type="button" id="clearForm" class="btn btn-secondary">Clear Form</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="controls-section">
+            <div class="view-toggles">
+                <button id="calendarViewBtn" class="view-toggle active">Calendar View</button>
+                <button id="listViewBtn" class="view-toggle">List View</button>
+            </div>
+            <div class="employee-filter">
+                <label for="employeeFilter">Filter by Employee:</label>
+                <select id="employeeFilter">
+                    <option value="">All Employees</option>
+                </select>
+            </div>
+            <button id="exportBtn" class="btn btn-success">Export to Excel</button>
+        </section>
+
+        <section id="calendarView" class="view-container active">
+            <div class="calendar-header">
+                <button id="prevMonth" class="nav-btn">← Previous</button>
+                <h2 id="currentMonthDisplay">January 2024</h2>
+                <button id="nextMonth" class="nav-btn">Next →</button>
+            </div>
+            <div class="holiday-legend">
+                <div class="holiday-legend-item">
+                    <div class="holiday-color nz"></div>
+                    <span>New Zealand Holidays</span>
+                </div>
+                <div class="holiday-legend-item">
+                    <div class="holiday-color au"></div>
+                    <span>Australia Holidays</span>
+                </div>
+                <div class="holiday-legend-item">
+                    <div class="holiday-color vn"></div>
+                    <span>Vietnam Holidays</span>
+                </div>
+                <div class="holiday-legend-item">
+                    <div class="holiday-color in"></div>
+                    <span>India Holidays</span>
+                </div>
+            </div>
+            <div id="calendarGrid" class="calendar-grid"></div>
+        </section>
+
+        <section id="listView" class="view-container">
+            <div class="list-controls">
+                <div class="filter-group">
+                    <label for="filterName">Filter by Name:</label>
+                    <input type="text" id="filterName" placeholder="Enter name...">
+                </div>
+                <div class="filter-group">
+                    <label for="filterType">Filter by Type:</label>
+                    <select id="filterType">
+                        <option value="">All</option>
+                        <option value="planned">Planned</option>
+                        <option value="tentative">Tentative</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filterStartDate">From Date:</label>
+                    <input type="date" id="filterStartDate">
+                </div>
+                <div class="filter-group">
+                    <label for="filterEndDate">To Date:</label>
+                    <input type="date" id="filterEndDate">
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <button id="resetFilters" class="btn btn-secondary btn-filter">Reset Filters</button>
+                </div>
+            </div>
+            <div id="listTable" class="list-table"></div>
+        </section>
+
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Edit Leave</h2>
+                <form id="editForm">
+                    <input type="hidden" id="editId">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editName">Team Member Name *</label>
+                            <input type="text" id="editName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLeaveType">Leave Type *</label>
+                            <select id="editLeaveType" required>
+                                <option value="planned">Planned</option>
+                                <option value="tentative">Tentative</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editStartDate">Start Date *</label>
+                            <input type="date" id="editStartDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editEndDate">End Date *</label>
+                            <input type="date" id="editEndDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editReason">Reason / Notes</label>
+                        <textarea id="editReason" rows="2"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Update Leave</button>
+                        <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+    <script src="calendar-view.js"></script>
+    <script src="list-view.js"></script>
+    <script src="excel-export.js"></script>
+</body>
+</html>
