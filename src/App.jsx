@@ -106,8 +106,13 @@ function App() {
   return (
     <div className="container">
       <header>
-        <h1>Team Leave Calendar</h1>
-        <p className="subtitle">Manage your team's planned and tentative annual leaves</p>
+        <div className="header-content">
+          <img src="/assets/tally_logo1.svg" alt="Tally Logo" className="tally-logo" />
+          <div className="header-text">
+            <h1>Team Leave Calendar</h1>
+            <p className="subtitle">Manage your team's planned and tentative annual leaves</p>
+          </div>
+        </div>
       </header>
 
       <LeaveForm onAddLeave={addLeave} />

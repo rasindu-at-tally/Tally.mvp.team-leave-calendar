@@ -21,10 +21,30 @@ body {
 }
 
 header {
-    text-align: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 3px solid #667eea;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tally-logo {
+    height: 60px;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+}
+
+.header-text {
+    text-align: center;
+    flex: 1;
+    min-width: 300px;
 }
 
 h1 {
