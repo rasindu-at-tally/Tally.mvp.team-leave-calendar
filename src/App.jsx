@@ -5,7 +5,6 @@ import Controls from './components/Controls';
 import CalendarView from './components/CalendarView';
 import ListView from './components/ListView';
 import EditModal from './components/EditModal';
-import { publicHolidays } from './utils/constants';
 
 function App() {
   const [leaves, setLeaves] = useState([]);
