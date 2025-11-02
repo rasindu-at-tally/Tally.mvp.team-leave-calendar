@@ -46,16 +46,21 @@ function calculateWorkingDays(startDate, endDate) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('exportBtn').addEventListener('click', exportToCSV);
+    const exportBtn = document.getElementById('exportBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', exportToCSV);
+    }
 });
 
 async function exportToCSV() {
-    if (!leaveApp.leaves || leaveApp.leaves.length === 0) {
+    if (!window.leaveApp || !window.leaveApp.leaves || window.leaveApp.leaves.length === 0) {
         alert('No leave entries to export!');
         return;
     }
 
     const exportBtn = document.getElementById('exportBtn');
+    if (!exportBtn) return;
+    
     const originalText = exportBtn.innerHTML;
     
     // Show spinner
@@ -63,17 +68,27 @@ async function exportToCSV() {
     exportBtn.innerHTML = '<span class="spinner"></span> Exporting...';
     
     try {
+        // Ensure we have the correct data structure
+        const leavesData = window.leaveApp.leaves.map(leave => ({
+            name: leave.name || '',
+            startDate: leave.startDate || '',
+            endDate: leave.endDate || '',
+            leaveType: leave.leaveType || 'planned'
+        }));
+
         // Send leave data to Python backend
         const response = await fetch('http://localhost:5000/export-csv', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ leaves: leaveApp.leaves })
+            body: JSON.stringify({ leaves: leavesData })
         });
 
         if (!response.ok) {
-            throw new Error('Export failed');
+            const errorText = await response.text();
+            console.error('Server error:', errorText);
+            throw new Error(`Export failed: ${response.status} ${response.statusText}`);
         }
 
         // Get the CSV blob
@@ -90,11 +105,15 @@ async function exportToCSV() {
         window.URL.revokeObjectURL(url);
         
         // Success message
-        alert(`Successfully exported ${leaveApp.leaves.length} leave entries!`);
+        alert(`Successfully exported ${window.leaveApp.leaves.length} leave entries!`);
         
     } catch (error) {
         console.error('Export error:', error);
-        alert('Error exporting to CSV. Please make sure the Python server is running (python leave_calendar_app.py)');
+        if (error.message && error.message.includes('fetch')) {
+            alert('Cannot connect to export server. Please make sure the Python Flask server is running:\n\npython leave_calendar_app.py\n\nThe server should be running on http://localhost:5000');
+        } else {
+            alert(`Error exporting to CSV: ${error.message}\n\nPlease make sure the Python server is running (python leave_calendar_app.py)`);
+        }
     } finally {
         // Restore button
         exportBtn.disabled = false;
