@@ -85,12 +85,18 @@ def export_csv():
         response = make_response(csv_content)
         filename = f"Team_Leaves_{datetime.now().strftime('%Y-%m-%d')}.csv"
         response.headers['Content-Disposition'] = f'attachment; filename={filename}'
-        response.headers['Content-Type'] = 'text/csv'
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        response.headers['Access-Control-Allow-Origin'] = '*'
         
         return response
         
+    except KeyError as e:
+        return jsonify({'error': f'Missing required field: {str(e)}'}), 400
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Export error: {error_details}")
+        return jsonify({'error': str(e), 'details': error_details}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
